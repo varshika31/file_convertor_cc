@@ -1,0 +1,716 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CloudConvert - cloud-based file conversion workspace">
+<title>CloudConvert | File Conversion Workspace</title>
+
+<style>
+:root {
+  --navy:#14233f;
+  --blue:#2563eb;
+  --bg:#f4f7fc;
+  --muted:#718096;
+  --line:#e7edf5;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:#17243a;
+}
+
+.shell { display:flex; min-height:100vh; }
+
+.sidebar {
+  width:245px;
+  background:var(--navy);
+  color:#fff;
+  padding:27px 18px;
+  flex-shrink:0;
+}
+
+.brand {
+  font-size:22px;
+  font-weight:800;
+  margin:0 8px 38px;
+}
+
+.brand span { color:#65b4ff; }
+
+.group {
+  font-size:10px;
+  letter-spacing:1.5px;
+  color:#91a2bd;
+  margin:25px 10px 10px;
+}
+
+.nav a {
+  display:block;
+  padding:12px 13px;
+  margin:4px 0;
+  border-radius:9px;
+  text-decoration:none;
+  color:#cbd5e1;
+  font-size:14px;
+}
+
+.nav a.active,.nav a:hover {
+  background:#263e65;
+  color:white;
+}
+
+.main {
+  flex:1;
+  min-width:0;
+  padding:30px;
+}
+
+.header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:27px;
+}
+
+h1 { font-size:26px; margin:0; }
+
+.sub {
+  color:var(--muted);
+  font-size:13px;
+  margin-top:7px;
+}
+
+.user {
+  background:white;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 14px;
+  font-size:13px;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.card {
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:20px;
+  box-shadow:0 4px 16px rgba(28,48,80,.035);
+}
+
+.label { font-size:12px; color:var(--muted); }
+
+.number {
+  font-size:28px;
+  font-weight:750;
+  margin-top:10px;
+}
+
+.blue { color:#2563eb; }
+.green { color:#159665; }
+.orange { color:#d98a16; }
+.red { color:#dc5252; }
+
+.columns {
+  display:grid;
+  grid-template-columns:1.35fr 1fr;
+  gap:18px;
+}
+
+h2 { font-size:16px; margin:0 0 8px; }
+
+.hint {
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.drop {
+  margin-top:18px;
+  border:2px dashed #b9ccec;
+  background:#f8fbff;
+  border-radius:12px;
+  padding:30px 15px;
+  text-align:center;
+}
+
+.drop .symbol {
+  font-size:34px;
+  margin-bottom:9px;
+}
+
+.drop label {
+  display:inline-block;
+  background:var(--blue);
+  color:#fff;
+  padding:11px 17px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:650;
+  cursor:pointer;
+  margin-top:13px;
+}
+
+input[type=file] { display:none; }
+
+#picked {
+  font-size:12px;
+  color:var(--blue);
+  margin-top:12px;
+  overflow-wrap:anywhere;
+}
+
+.field {
+  display:block;
+  margin-top:17px;
+  font-size:12px;
+  color:#52627a;
+}
+
+select {
+  width:100%;
+  padding:12px;
+  margin-top:7px;
+  border:1px solid #dce4ef;
+  border-radius:8px;
+  background:#fff;
+  color:#17243a;
+}
+
+button {
+  border:0;
+  background:var(--blue);
+  color:white;
+  border-radius:8px;
+  padding:12px 17px;
+  font-weight:650;
+  cursor:pointer;
+}
+
+button:hover { background:#1d4ed8; }
+
+button:disabled {
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.convert {
+  width:100%;
+  margin-top:16px;
+}
+
+.notice {
+  font-size:12px;
+  color:#718096;
+  margin-top:12px;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+
+.rows { margin-top:18px; }
+
+.row {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+  font-size:12px;
+}
+
+.pill {
+  background:#e9f8f0;
+  color:#13824e;
+  padding:5px 9px;
+  border-radius:20px;
+  font-size:10px;
+}
+
+.history { margin-top:18px; }
+
+.tablewrap { overflow-x:auto; }
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:12px;
+  margin-top:12px;
+}
+
+th,td {
+  text-align:left;
+  padding:13px 9px;
+  border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+
+th { color:var(--muted); font-weight:550; }
+
+.empty {
+  text-align:center;
+  color:#91a0b4;
+  padding:22px;
+}
+
+footer {
+  text-align:center;
+  color:#94a0b2;
+  font-size:11px;
+  margin:25px 0 5px;
+}
+
+@media(max-width:900px) {
+  .stats { grid-template-columns:repeat(2,1fr); }
+  .columns { grid-template-columns:1fr; }
+}
+
+@media(max-width:580px) {
+  .sidebar { width:62px; padding:20px 7px; }
+  .brand { font-size:0; margin:0 8px 30px; }
+  .brand:first-letter { font-size:23px; }
+  .group { font-size:0; }
+  .nav a {
+    font-size:0;
+    text-align:center;
+    padding:13px 3px;
+  }
+  .main { padding:16px; }
+  .header { align-items:flex-start; }
+  .user { font-size:11px; }
+  .stats { gap:9px; }
+  .card { padding:15px; }
+  .number { font-size:23px; }
+  h1 { font-size:21px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="shell">
+
+<aside class="sidebar">
+  <div class="brand">☁ Cloud<span>Convert</span></div>
+
+  <div class="group">WORKSPACE</div>
+
+  <nav class="nav">
+    <a class="active" href="#overview">▦ &nbsp; Dashboard</a>
+    <a href="#convert">⇧ &nbsp; Convert files</a>
+    <a href="#history">◷ &nbsp; Conversion history</a>
+    <a href="#analytics">▥ &nbsp; Analytics</a>
+  </nav>
+
+  <div class="group">ACCOUNT</div>
+
+  <nav class="nav">
+    <a href="#storage">▣ &nbsp; Storage</a>
+    <a href="#about">ⓘ &nbsp; About</a>
+  </nav>
+</aside>
+
+<main class="main" id="overview">
+
+<header class="header">
+  <div>
+    <h1>Business Dashboard</h1>
+    <p class="sub">Your cloud file-conversion workspace at a glance.</p>
+  </div>
+  <div class="user">👤 &nbsp; Administrator</div>
+</header>
+
+<section class="stats">
+
+  <div class="card">
+    <div class="label">Total conversions</div>
+    <div class="number blue" id="total">0</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Successful</div>
+    <div class="number green" id="success">0</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Processing</div>
+    <div class="number orange" id="processing">0</div>
+  </div>
+
+  <div class="card">
+    <div class="label">Failed</div>
+    <div class="number red" id="failed">0</div>
+  </div>
+
+</section>
+
+<section class="columns">
+
+<div class="card" id="convert">
+
+  <h2>☁ Convert your files</h2>
+
+  <p class="hint">
+    Choose a file and select the format you want.
+    Your file will be converted using the AWS cloud backend.
+  </p>
+
+  <div class="drop">
+
+    <div class="symbol">📁</div>
+
+    <strong>Select a file to get started</strong>
+
+    <p class="hint">Choose a document from your device</p>
+
+    <input id="file" type="file">
+
+    <label for="file">Browse files</label>
+
+    <div id="picked">No file selected</div>
+
+  </div>
+
+  <label class="field" for="format">
+    Conversion format
+
+    <select id="format">
+      <option value="csv_to_excel">CSV → Excel (.xlsx)</option>
+      <option value="excel_to_csv">Excel → CSV (.csv)</option>
+      <option value="pdf_to_txt">PDF → Text (.txt)</option>
+      <option value="pdf_to_jpg">PDF → JPG (ZIP)</option>
+      <option value="jpg_to_pdf">JPG → PDF</option>
+      <option value="png_to_jpg">PNG → JPG</option>
+      <option value="json_to_excel">JSON → Excel (.xlsx)</option>
+      <option value="excel_to_json">Excel → JSON (.json)</option>
+      <option value="json_to_csv">JSON → CSV (.csv)</option>
+      <option value="csv_to_json">CSV → JSON (.json)</option>
+    </select>
+  </label>
+
+  <button class="convert" id="convertBtn">
+    Start conversion →
+  </button>
+
+  <p class="notice" id="message" role="status">
+    Select a file and start your conversion.
+  </p>
+
+</div>
+
+<div class="card" id="analytics">
+
+  <h2>Platform overview</h2>
+
+  <p class="hint">Cloud platform components.</p>
+
+  <div class="rows">
+
+    <div class="row">
+      <span>Website hosting</span>
+      <span class="pill">S3 enabled</span>
+    </div>
+
+    <div class="row">
+      <span>File processing</span>
+      <span>Lambda</span>
+    </div>
+
+    <div class="row">
+      <span>Conversion engine</span>
+      <span class="pill">Connected</span>
+    </div>
+
+    <div class="row">
+      <span>File storage</span>
+      <span>Browser download</span>
+    </div>
+
+    <div class="row">
+      <span>API layer</span>
+      <span>API Gateway</span>
+    </div>
+
+    <div class="row">
+      <span>Hardware</span>
+      <span>Not required</span>
+    </div>
+
+  </div>
+
+</div>
+
+</section>
+
+<section class="card history" id="history">
+
+  <h2>Recent conversion history</h2>
+
+  <div class="tablewrap">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>File name</th>
+          <th>Conversion</th>
+          <th>Date</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+
+      <tbody id="historyBody">
+        <tr>
+          <td colspan="4" class="empty">
+            No conversion records yet
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+<footer id="about">
+  CloudConvert · Cloud-based Multi-Format File Converter
+</footer>
+
+</main>
+</div>
+
+<script>
+
+const API_URL =
+  "https://4eor0smlak.execute-api.us-east-1.amazonaws.com/prod/convert";
+
+const fileInput = document.getElementById("file");
+const picked = document.getElementById("picked");
+const message = document.getElementById("message");
+const convertBtn = document.getElementById("convertBtn");
+
+let total = 0;
+let successful = 0;
+let failed = 0;
+
+const formats = {
+  csv_to_excel: [".csv"],
+  excel_to_csv: [".xlsx", ".xlsm"],
+  pdf_to_txt: [".pdf"],
+  pdf_to_jpg: [".pdf"],
+  jpg_to_pdf: [".jpg", ".jpeg"],
+  png_to_jpg: [".png"],
+  json_to_excel: [".json"],
+  excel_to_json: [".xlsx"],
+  json_to_csv: [".json"],
+  csv_to_json: [".csv"]
+};
+
+fileInput.addEventListener("change", () => {
+
+  const file = fileInput.files[0];
+
+  picked.textContent = file
+    ? file.name + " (" + (file.size / 1024).toFixed(1) + " KB)"
+    : "No file selected";
+
+  message.textContent = file
+    ? "File selected. Choose a conversion format."
+    : "Please select a file.";
+
+});
+
+function updateStats() {
+
+  document.getElementById("total").textContent = total;
+  document.getElementById("success").textContent = successful;
+  document.getElementById("failed").textContent = failed;
+  document.getElementById("processing").textContent = "0";
+
+}
+
+function addHistory(filename, format, status) {
+
+  const history = document.getElementById("historyBody");
+
+  if (history.querySelector(".empty")) {
+    history.innerHTML = "";
+  }
+
+  const row = history.insertRow(0);
+
+  row.insertCell(0).textContent = filename;
+  row.insertCell(1).textContent = format;
+  row.insertCell(2).textContent = new Date().toLocaleString();
+  row.insertCell(3).textContent = status;
+
+}
+
+function getBase64(file) {
+
+  return new Promise((resolve, reject) => {
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      resolve(reader.result.split(",")[1]);
+    };
+
+    reader.onerror = () => {
+      reject(new Error("Could not read the selected file."));
+    };
+
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+convertBtn.addEventListener("click", async () => {
+
+  const file = fileInput.files[0];
+
+  if (!file) {
+    message.textContent = "Please choose a file first.";
+    return;
+  }
+
+  if (file.size > 4 * 1024 * 1024) {
+    message.textContent =
+      "Please select a file smaller than 4 MB.";
+    return;
+  }
+
+  const conversion = document.getElementById("format").value;
+
+  const extension =
+    "." + file.name.split(".").pop().toLowerCase();
+
+  if (!formats[conversion].includes(extension)) {
+
+    message.textContent =
+      "Please select the correct file type for this conversion.";
+
+    return;
+  }
+
+  total++;
+  updateStats();
+
+  convertBtn.disabled = true;
+  convertBtn.textContent = "Converting...";
+
+  document.getElementById("processing").textContent = "1";
+
+  message.textContent =
+    "Sending your file to the AWS conversion service...";
+
+  try {
+
+    const base64 = await getBase64(file);
+
+    const apiResponse = await fetch(API_URL, {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+
+        filename: file.name,
+        conversion: conversion,
+        file: base64
+
+      })
+
+    });
+
+    if (!apiResponse.ok) {
+
+      const errorText = await apiResponse.text();
+
+      let errorMessage = errorText;
+
+      try {
+        const parsed = JSON.parse(errorText);
+        errorMessage = parsed.error || errorText;
+      } catch (e) {}
+
+      throw new Error(errorMessage);
+
+    }
+
+    const blob = await apiResponse.blob();
+
+    if (!blob.size) {
+      throw new Error("The converted file is empty.");
+    }
+
+    const disposition =
+      apiResponse.headers.get("Content-Disposition") || "";
+
+    const match =
+      disposition.match(/filename="?([^"]+)"?/i);
+
+    const outputName = match
+      ? match[1]
+      : "converted_file";
+
+    const downloadUrl = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+
+    link.href = downloadUrl;
+    link.download = outputName;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(downloadUrl), 1000);
+
+    successful++;
+
+    message.textContent =
+      "Success! Your converted file has been downloaded.";
+
+    addHistory(file.name, conversion, "Successful");
+
+  } catch (error) {
+
+    failed++;
+
+    message.textContent =
+      "Conversion failed: " + error.message;
+
+    addHistory(file.name, conversion, "Failed");
+
+  } finally {
+
+    convertBtn.disabled = false;
+    convertBtn.textContent = "Start conversion →";
+
+    updateStats();
+
+  }
+
+});
+
+</script>
+
+</body>
+</html>
